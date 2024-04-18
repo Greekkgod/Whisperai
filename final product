@@ -1,0 +1,38 @@
+from flask import (Flask, redirect, render_template, request, url_for, jsonify)
+import os
+from openai import OpenAI
+
+api_key = "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"
+client = OpenAI(api_key=api_key)
+app = Flask(__name__)
+app.config["UPLOAD_FOLDER"] = "static"
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file:
+          filename = file.filename
+          file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        #  return redirect(url_for('uploaded_file',filename=filename))
+      #  return redirect(url for ('uploaded_file', file==file))
+          audio_file= open("hindi.mp3", "rb")
+          transcript = openai.Audio.translate("whisper-1",audio_file, language="bn")
+          jsonify(transcript)
+
+    return '''
+    <!doctype html>
+    <title>Upload an audio file</title>+]
+    <h1>Upload an audio file</h1>
+   <form method=post enctype=multipart/form-data>
+      <p><input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+@app.route('/static/<filename>')
+def uploaded_file(filename):
+    return 'file uploaded successfully'
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)
+
+
+     #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 key of openai
